@@ -8,7 +8,9 @@ on:
       - '.github/dependabot.yml'
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *'  # every day at midnight
+    # Build every day at 6:00 a.m.
+    # Fedora Silverblue image is built at 4:00 a.m.
+    - cron: '0 6 * * *'
 env:
     IMAGE_NAME: ${{ github.event.repository.name }}
     IMAGE_TAGS: latest ${{ github.sha }}
