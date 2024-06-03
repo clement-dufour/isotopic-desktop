@@ -1,0 +1,3 @@
+docker:
+  ghcr.io/clement-dufour:
+    use-sigstore-attachments: true
