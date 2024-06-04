@@ -2,7 +2,9 @@ FROM quay.io/fedora-ostree-desktops/silverblue:40
 
 COPY usr /usr
 
-RUN mkdir -p /var/lib/alternatives && \
+RUN \
+    mkdir -p /var/lib/alternatives && \
     rpm-ostree uninstall firefox firefox-langpacks && \
     rpm-ostree install ddcutil fzf gvfs-nfs neovim && \
+    systemctl enable rpm-ostreed-automatic.timer && \
     ostree container commit
