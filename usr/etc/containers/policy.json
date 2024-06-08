@@ -2,6 +2,7 @@
     "default": [{"type": "reject"}],
     "transports": {
         "docker": {
+            "docker.io/library": [{"type": "insecureAcceptAnything"}],
             "quay.io/toolbx-images": [
                 {
                     "type": "sigstoreSigned",
@@ -22,6 +23,9 @@
             ]
         },
         "dir": {
+            "": [{"type": "insecureAcceptAnything"}]
+        },
+        "containers-storage": {
             "": [{"type": "insecureAcceptAnything"}]
         }
     }
