@@ -14,7 +14,6 @@ RUN \
         gvfs-nfs \
         neovim \
         syncthing \
-        ulauncher \
     && \
     systemctl enable rpm-ostreed-automatic.timer && \
     ostree container commit
