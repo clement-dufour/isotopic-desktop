@@ -1,6 +1,6 @@
 FROM quay.io/fedora-ostree-desktops/silverblue:40
 
-COPY usr /usr
+COPY files /
 
 RUN \
     mkdir -p /var/lib/alternatives && \
