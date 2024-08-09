@@ -14,6 +14,11 @@ RUN \
         gvfs-nfs \
         neovim \
         syncthing \
+        vagrant \
+        vagrant-libvirt \
+        virt-install \
+        virt-manager \
+        virt-viewer \
     && \
     systemctl enable rpm-ostreed-automatic.timer && \
     ostree container commit
