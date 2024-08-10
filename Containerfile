@@ -21,5 +21,5 @@ RUN \
         virt-manager \
         virt-viewer \
     && \
-    systemctl enable rpm-ostreed-automatic.timer && \
+    systemctl preset-all && \
     ostree container commit
