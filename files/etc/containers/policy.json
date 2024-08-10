@@ -2,7 +2,15 @@
     "default": [{"type": "reject"}],
     "transports": {
         "docker": {
-            "docker.io/library": [{"type": "insecureAcceptAnything"}],
+            "ghcr.io/clement-dufour": [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": "/etc/pki/containers/ghcr.io-clement-dufour.pub",
+                    "signedIdentity": {
+                        "type": "matchRepository"
+                    }
+                }
+            ],
             "quay.io/toolbx-images": [
                 {
                     "type": "sigstoreSigned",
@@ -12,15 +20,8 @@
                     }
                 }
             ],
-            "ghcr.io/clement-dufour": [
-                {
-                    "type": "sigstoreSigned",
-                    "keyPath": "/etc/pki/containers/ghcr.io-clement-dufour.pub",
-                    "signedIdentity": {
-                        "type": "matchRepository"
-                    }
-                }
-            ]
+            "quay.io/fedora-ostree-desktops": [{"type": "insecureAcceptAnything"}],
+            "docker.io/library": [{"type": "insecureAcceptAnything"}]
         },
         "dir": {
             "": [{"type": "insecureAcceptAnything"}]
