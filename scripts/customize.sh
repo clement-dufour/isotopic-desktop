@@ -17,6 +17,8 @@ rpm-ostree install \
     gvfs-nfs \
     neovim \
     syncthing \
+    usbguard \
+    usbguard-notifier \
     virt-install \
     virt-manager \
     virt-viewer \
