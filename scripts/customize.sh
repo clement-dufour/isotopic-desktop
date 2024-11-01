@@ -9,6 +9,7 @@ mkdir -p /var/lib/alternatives
 rpm-ostree uninstall \
     firefox \
     firefox-langpacks \
+    gnome-software-rpm-ostree \
 
 rpm-ostree install \
     ddcutil \
