@@ -11,6 +11,7 @@ rpm-ostree uninstall \
     firefox-langpacks \
     gnome-software-rpm-ostree \
 
+
 rpm-ostree install \
     ddcutil \
     fzf \
@@ -23,6 +24,7 @@ rpm-ostree install \
     virt-manager \
     virt-viewer \
     zstd \
+
 
 systemctl preset-all
 
