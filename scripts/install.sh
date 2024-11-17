@@ -4,13 +4,13 @@ set -ouex pipefail
 
 rpm-ostree cliwrap install-to-root /
 
-rpm-ostree uninstall \
+dnf uninstall --assumeyes \
     firefox \
     firefox-langpacks \
     gnome-software-rpm-ostree \
 
 
-rpm-ostree install \
+dnf install --assumeyes \
     ddcutil \
     fzf \
     gvfs-nfs \
@@ -25,6 +25,8 @@ rpm-ostree install \
 
 
 systemctl preset-all
+
+dnf clean all
 
 # https://gitlab.com/fedora/ostree/ci-test/-/tree/main
 # https://github.com/coreos/layering-examples/blob/main/initramfs-module/Containerfile
