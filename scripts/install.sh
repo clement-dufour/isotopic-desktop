@@ -4,8 +4,6 @@ set -ouex pipefail
 
 rpm-ostree cliwrap install-to-root /
 
-mkdir -p /var/lib/alternatives
-
 rpm-ostree uninstall \
     firefox \
     firefox-langpacks \
