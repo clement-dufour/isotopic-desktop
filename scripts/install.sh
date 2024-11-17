@@ -24,9 +24,9 @@ dnf install --assumeyes \
     zstd \
 
 
-systemctl preset-all
-
 dnf clean all
+
+systemctl preset-all
 
 # https://gitlab.com/fedora/ostree/ci-test/-/tree/main
 # https://github.com/coreos/layering-examples/blob/main/initramfs-module/Containerfile
