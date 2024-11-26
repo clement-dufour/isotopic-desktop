@@ -15,6 +15,7 @@ dnf install --assumeyes \
     fzf \
     gvfs-nfs \
     neovim \
+    osbuild-selinux \
     syncthing \
     usbguard \
     usbguard-notifier \
