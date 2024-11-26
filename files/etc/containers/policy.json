@@ -21,6 +21,8 @@
                 }
             ],
             "quay.io/fedora-ostree-desktops": [{"type": "insecureAcceptAnything"}],
+            "quay.io/fedora": [{"type": "insecureAcceptAnything"}],
+            "quay.io/centos-bootc": [{"type": "insecureAcceptAnything"}],
             "docker.io/library": [{"type": "insecureAcceptAnything"}]
         },
         "dir": {
