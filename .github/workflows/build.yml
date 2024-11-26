@@ -1,4 +1,4 @@
-name: Daily image build
+name: Build image
 on:
   push:
     branches:
