@@ -1,7 +1,9 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
-set -ouex pipefail
+set -oue pipefail
+set -x
 
+# Allow dracut usage
 rpm-ostree cliwrap install-to-root /
 
 dnf uninstall --assumeyes \
@@ -29,6 +31,7 @@ dnf clean all
 
 systemctl preset-all
 
+# Rebuild initramfs to change plymouth theme
 # https://gitlab.com/fedora/ostree/ci-test/-/tree/main
 # https://github.com/coreos/layering-examples/blob/main/initramfs-module/Containerfile
 # https://github.com/ublue-os/main/blob/main/initramfs.sh
