@@ -1,0 +1,31 @@
+name: Cleanup old images
+on:
+  workflow_dispatch:
+  schedule:
+    # Cleanup every week at 8:00 a.m.
+    - cron: "0 8 * * 0"
+
+env:
+    IMAGE_NAME: ${{ github.event.repository.name }}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+
+jobs:
+  cleanup-old-packages:
+    name: Cleanup old packages
+    runs-on: ubuntu-24.04
+
+    permissions:
+      packages: write
+
+    steps:
+      - name: Cleanup packages older than two weeks
+        uses: dataaxiom/ghcr-cleanup-action@v1.0.13
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          packages: ${{ env.IMAGE_NAME }}
+          older-than: 90 days
+          delete-orphaned-images: true
+          keep-n-tagged: 7
+          keep-n-untagged: 7
