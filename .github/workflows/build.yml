@@ -3,9 +3,11 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - '**/README.org'
-      - '.github/dependabot.yml'
+    paths:
+      - '**'
+      - '!**/README.org'
+      - '!.github/**'
+      - '.github/workflows/build.yml'
   workflow_dispatch:
   schedule:
     # Build every day at 6:00 a.m.
