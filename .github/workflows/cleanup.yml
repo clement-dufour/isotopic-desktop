@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Cleanup packages older than two weeks
-        uses: dataaxiom/ghcr-cleanup-action@v1.0.13
+        uses: dataaxiom/ghcr-cleanup-action@v1.0.14
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           packages: ${{ env.IMAGE_NAME }}
