@@ -40,7 +40,7 @@ jobs:
           fetch-depth: 1
 
       - name: Install Cosign
-        uses: sigstore/cosign-installer@v3.8.0
+        uses: sigstore/cosign-installer@v3.8.1
 
       - name: Build image
         id: build_image
