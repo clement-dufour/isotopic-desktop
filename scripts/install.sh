@@ -3,16 +3,13 @@
 set -oue pipefail
 set -x
 
-# Allow dracut usage
-rpm-ostree cliwrap install-to-root /
-
-dnf uninstall --assumeyes \
+/usr/bin/dnf5 remove --assumeyes \
     firefox \
     firefox-langpacks \
     gnome-software-rpm-ostree \
 
 
-dnf install --assumeyes \
+/usr/bin/dnf5 install --assumeyes \
     ddcutil \
     fzf \
     gvfs-nfs \
@@ -27,16 +24,16 @@ dnf install --assumeyes \
     zstd \
 
 
-dnf clean all
+/usr/bin/dnf5 clean all
 
-systemctl preset-all
+/usr/bin/systemctl preset-all
 
 # Rebuild initramfs to change plymouth theme
 # https://gitlab.com/fedora/ostree/ci-test/-/tree/main
 # https://github.com/coreos/layering-examples/blob/main/initramfs-module/Containerfile
 # https://github.com/ublue-os/main/blob/main/initramfs.sh
 KERNEL_VERSION=$(rpm -q kernel | cut -c 8-)
-/usr/libexec/rpm-ostree/wrapped/dracut --kver "${KERNEL_VERSION}" --force \
-    --add 'ostree' --nostrip --verbose --no-hostonly --zstd --reproducible \
+/usr/bin/dracut --kver "${KERNEL_VERSION}" --force --add ostree --nostrip \
+    --verbose --no-hostonly --zstd --reproducible \
     "/lib/modules/${KERNEL_VERSION}/initramfs.img"
 /usr/bin/chmod 0600 "/lib/modules/${KERNEL_VERSION}/initramfs.img"
