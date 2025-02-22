@@ -39,3 +39,4 @@ KERNEL_VERSION=$(rpm -q kernel | cut -c 8-)
 /usr/libexec/rpm-ostree/wrapped/dracut --kver "${KERNEL_VERSION}" --force \
     --add 'ostree' --nostrip --verbose --no-hostonly --zstd --reproducible \
     "/lib/modules/${KERNEL_VERSION}/initramfs.img"
+/usr/bin/chmod 0600 "/lib/modules/${KERNEL_VERSION}/initramfs.img"
