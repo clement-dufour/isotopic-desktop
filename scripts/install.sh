@@ -18,9 +18,6 @@ set -x
     syncthing \
     usbguard \
     usbguard-notifier \
-    virt-install \
-    virt-manager \
-    virt-viewer \
     zstd \
 
 
