@@ -21,6 +21,9 @@ env:
     REGISTRY_USER: ${{ github.actor }}
     REGISTRY_PASSWORD: ${{ github.token }}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+
 jobs:
   build-push:
     name: Build, push and sign image
