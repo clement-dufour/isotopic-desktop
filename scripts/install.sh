@@ -21,9 +21,6 @@ set -x
     zstd \
 
 
-/usr/bin/dnf5 config-manager addrepo --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo
-/usr/bin/dnf5 install --assumeyes tailscale
-
 /usr/bin/dnf5 clean all
 
 /usr/bin/systemctl preset-all
