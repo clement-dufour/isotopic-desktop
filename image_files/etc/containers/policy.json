@@ -20,7 +20,15 @@
                     }
                 }
             ],
-            "quay.io/fedora-ostree-desktops": [{"type": "insecureAcceptAnything"}],
+            "quay.io/fedora-ostree-desktops": [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": "/etc/pki/containers/quay.io-fedora-ostree-desktops.pub",
+                    "signedIdentity": {
+                        "type": "matchRepository"
+                    }
+                }
+            ],
             "quay.io/fedora": [{"type": "insecureAcceptAnything"}],
             "quay.io/centos-bootc": [{"type": "insecureAcceptAnything"}],
             "registry.fedoraproject.org/fedora-toolbox": [{"type": "insecureAcceptAnything"}],

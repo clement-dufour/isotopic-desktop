@@ -1,0 +1,16 @@
+{
+    "default": [{"type": "reject"}],
+    "transports": {
+        "docker": {
+            "quay.io/fedora-ostree-desktops": [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": "/etc/pki/containers/quay.io-fedora-ostree-desktops.pub",
+                    "signedIdentity": {
+                        "type": "matchRepository"
+                    }
+                }
+            ]
+        }
+    }
+}

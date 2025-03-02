@@ -54,6 +54,11 @@ jobs:
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3.8.1
 
+      - name: Enforce signature verification
+        shell: bash
+        run: |
+          sudo cp --recursive build_files/. /
+
       - name: Build image
         id: build_image
         uses: redhat-actions/buildah-build@v2
