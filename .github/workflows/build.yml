@@ -54,7 +54,7 @@ jobs:
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3.8.1
 
-      - name: Enforce signature verification
+      - name: Change containers signature policy file
         shell: bash
         run: |
           sudo cp --recursive build_files/. /
