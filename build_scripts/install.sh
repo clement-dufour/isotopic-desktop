@@ -10,10 +10,12 @@ set -x
 
 
 /usr/bin/dnf5 install --assumeyes \
+    adw-gtk3-theme \
     ddcutil \
     fzf \
     gvfs-nfs \
     neovim \
+    openssl \
     osbuild-selinux \
     syncthing \
     usbguard \
