@@ -20,6 +20,7 @@ neovim \
 openssl \
 osbuild-selinux \
 syncthing \
+tmux \
 usbguard \
 usbguard-notifier \
 zstd \
