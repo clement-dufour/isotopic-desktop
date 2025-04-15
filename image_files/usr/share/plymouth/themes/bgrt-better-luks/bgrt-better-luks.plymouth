@@ -4,8 +4,8 @@ Description=Jimmac's spinner theme using the ACPI BGRT graphics as background wi
 ModuleName=two-step
 
 [two-step]
-Font=Cantarell 12
-TitleFont=Cantarell Light 30
+Font=Adwaita Sans 12
+TitleFont=Adwaita Sans Light 30
 ImageDir=/usr/share/plymouth/themes//spinner
 DialogHorizontalAlignment=.5
 DialogVerticalAlignment=.7
