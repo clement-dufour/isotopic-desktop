@@ -38,4 +38,5 @@ dracut --kver "${KERNEL_VERSION}" --force --add ostree --nostrip --verbose \
     "/lib/modules/${KERNEL_VERSION}/initramfs.img"
 chmod 0600 "/lib/modules/${KERNEL_VERSION}/initramfs.img"
 
+# shellcheck shell=sh disable=SC2115
 rm -r /var/*
