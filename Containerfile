@@ -6,4 +6,5 @@ COPY image_files /
 
 RUN --mount=type=bind,from=build_scripts,src=/,dst=/build_scripts \
     /build_scripts/install.sh && \
-    ostree container commit
+    ostree container commit && \
+    bootc container lint

@@ -37,3 +37,5 @@ dracut --kver "${KERNEL_VERSION}" --force --add ostree --nostrip --verbose \
     --no-hostonly --zstd --reproducible \
     "/lib/modules/${KERNEL_VERSION}/initramfs.img"
 chmod 0600 "/lib/modules/${KERNEL_VERSION}/initramfs.img"
+
+rm -r /var/*
