@@ -78,8 +78,6 @@ jobs:
           registry: ${{ env.IMAGE_REGISTRY }}
           username: ${{ env.REGISTRY_USER }}
           password: ${{ env.REGISTRY_PASSWORD }}
-          extra-args: |
-            --disable-content-trust
 
       - name: Login to GitHub Container Registry
         uses: redhat-actions/podman-login@v1
