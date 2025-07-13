@@ -8,7 +8,10 @@
       "matchPackageNames": [
         "quay.io/fedora-ostree-desktops/*"
       ],
-      "pinDigests": false
+      "matchUpdateTypes": [
+        "digest"
+      ],
+      "automerge": true
     }
   ]
 }
