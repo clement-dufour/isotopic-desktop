@@ -32,7 +32,7 @@ concurrency:
 
 jobs:
   build-push:
-    name: Build, push and sign image
+    name: Build image
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false

@@ -1,8 +1,8 @@
-name: Cleanup old images
+name: Cleanup old packages
 on:
-  workflow_dispatch:
   schedule:
     - cron: "0 8 * * SUN"
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
