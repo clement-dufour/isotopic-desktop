@@ -17,6 +17,7 @@ dnf5 install --assumeyes \
     neovim \
     openssl \
     osbuild-selinux \
+    playerctl \
     tmux \
     usbguard \
     usbguard-notifier \
