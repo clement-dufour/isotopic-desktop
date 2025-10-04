@@ -14,6 +14,7 @@ dnf5 install --assumeyes \
     ddcutil \
     fzf \
     gvfs-nfs \
+    igt-gpu-tools \
     neovim \
     openssl \
     osbuild-selinux \
