@@ -3,13 +3,13 @@
 set -oue pipefail
 set -x
 
-dnf5 remove --assumeyes \
+dnf remove --assumeyes \
     firefox \
     firefox-langpacks \
     gnome-software-rpm-ostree \
 
 
-dnf5 install --assumeyes \
+dnf install --assumeyes \
     adw-gtk3-theme \
     ddcutil \
     fzf \
@@ -25,7 +25,7 @@ dnf5 install --assumeyes \
     zstd \
 
 
-dnf5 clean all
+dnf clean all
 
 systemctl preset-all
 
