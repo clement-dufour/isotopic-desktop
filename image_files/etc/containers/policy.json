@@ -29,11 +29,7 @@
                     }
                 }
             ],
-            "quay.io/fedora": [{"type": "insecureAcceptAnything"}],
-            "quay.io/centos-bootc": [{"type": "insecureAcceptAnything"}],
-            "registry.fedoraproject.org/fedora-toolbox": [{"type": "insecureAcceptAnything"}],
-            "docker.io/library": [{"type": "insecureAcceptAnything"}],
-            "registry.gitlab.com/fedora": [{"type": "insecureAcceptAnything"}]
+            "": [{"type": "insecureAcceptAnything"}]
         },
         "dir": {
             "": [{"type": "insecureAcceptAnything"}]
