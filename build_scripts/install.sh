@@ -16,13 +16,11 @@ dnf install --assumeyes \
     gvfs-nfs \
     igt-gpu-tools \
     neovim \
-    openssl \
     osbuild-selinux \
     playerctl \
     tmux \
     usbguard \
     usbguard-notifier \
-    zstd \
 
 
 dnf clean all
