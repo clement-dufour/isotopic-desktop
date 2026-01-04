@@ -7,6 +7,7 @@ dnf remove --assumeyes \
     firefox \
     firefox-langpacks \
     gnome-software-rpm-ostree \
+    gnome-tour \
 
 
 dnf install --assumeyes \
