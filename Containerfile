@@ -1,7 +1,7 @@
 FROM scratch AS build_scripts
 COPY build_scripts /
 
-FROM quay.io/fedora-ostree-desktops/silverblue:43@sha256:b1844c5dd1ee3c55fc5daaea9ff1a76a6b7824633127f0e9404a1b1f12e2a9c1
+FROM quay.io/fedora-ostree-desktops/silverblue:43@sha256:348deb48fbf9843c3ef80076c8e94eca0cb8f4ea9c2ad3a136925cb0057b6404
 COPY image_files /
 
 RUN --mount=type=bind,from=build_scripts,src=/,dst=/build_scripts \
