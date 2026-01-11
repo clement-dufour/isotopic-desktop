@@ -32,7 +32,7 @@ systemctl preset-all
 # https://gitlab.com/fedora/ostree/ci-test/-/tree/main
 # https://github.com/coreos/layering-examples/blob/main/initramfs-module/Containerfile
 # https://github.com/ublue-os/main/blob/main/initramfs.sh
-KERNEL_VERSION=$(rpm -q kernel | cut -c 8-)
+KERNEL_VERSION=$(rpm --query --queryformat "%{VERSION}-%{RELEASE}.%{ARCH}\n" kernel)
 dracut --kver "${KERNEL_VERSION}" --force --add ostree --nostrip --verbose \
     --no-hostonly --zstd --reproducible \
     "/lib/modules/${KERNEL_VERSION}/initramfs.img"
