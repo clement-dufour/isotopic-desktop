@@ -3,6 +3,11 @@
 set -oue pipefail
 set -x
 
+dnf config-manager disable \
+    updates-archive \
+    fedora-cisco-openh264 \
+
+
 dnf remove --assumeyes \
     firefox \
     firefox-langpacks \
