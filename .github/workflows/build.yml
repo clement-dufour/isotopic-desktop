@@ -62,6 +62,13 @@ jobs:
           tags: ${{ env.IMAGE_TAGS }}
           oci: true
 
+      - name: Perform static analysis checks
+        run: |
+          podman run --rm localhost/${NAME}@${DIGEST} bootc container lint --fatal-warnings
+        env:
+          NAME: ${{ steps.build.outputs.image }}
+          DIGEST: ${{ steps.build.outputs.digest }}
+
       - name: Push to registry
         uses: redhat-actions/push-to-registry@5ed88d269cf581ea9ef6dd6806d01562096bee9c # v2
         id: push
