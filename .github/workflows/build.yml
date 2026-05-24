@@ -55,7 +55,7 @@ jobs:
 
       - name: Build
         id: build
-        uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 # v2
+        uses: redhat-actions/buildah-build@5ee3f5500545fbbeb34bec4364e8eb65a4d4ca68 # v2
         with:
           containerfiles: ./Containerfile
           image: ${{ env.IMAGE_NAME }}
@@ -64,9 +64,9 @@ jobs:
 
       - name: Perform static analysis checks
         env:
-          IMAGE_WITH_TAG: ${{ steps.build.outputs.image-with-tag }}
+          DIGEST: ${{ steps.build.outputs.digest }}
         run: |
-          podman run --rm localhost/${IMAGE_WITH_TAG} bootc container lint --fatal-warnings
+          podman run --rm localhost/${IMAGE_NAME}@${DIGEST} bootc container lint --fatal-warnings
 
       - name: Push to registry
         uses: redhat-actions/push-to-registry@5ed88d269cf581ea9ef6dd6806d01562096bee9c # v2
