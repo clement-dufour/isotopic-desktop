@@ -7,5 +7,4 @@ COPY image_files /
 RUN --mount=type=bind,from=build_scripts,source=/,target=/build_scripts \
     --mount=type=tmpfs,target=/var \
     /build_scripts/install.sh && \
-    ostree container commit && \
-    bootc container lint
+    ostree container commit

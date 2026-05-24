@@ -62,6 +62,12 @@ jobs:
           tags: ${{ env.IMAGE_TAGS }}
           oci: true
 
+      - name: Perform static analysis checks
+        env:
+          IMAGE_WITH_TAG: ${{ steps.build.outputs.image-with-tag }}
+        run: |
+          podman run --rm localhost/${IMAGE_WITH_TAG} bootc container lint --fatal-warnings
+
       - name: Push to registry
         uses: redhat-actions/push-to-registry@5ed88d269cf581ea9ef6dd6806d01562096bee9c # v2
         id: push
