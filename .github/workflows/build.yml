@@ -50,7 +50,6 @@ jobs:
         uses: sigstore/cosign-installer@7e8b541eb2e61bf99390e1afd4be13a184e9ebc5 # v3.10.1
 
       - name: Change containers signature policy file
-        shell: bash
         run: |
           sudo cp --recursive build_files/. /
 
