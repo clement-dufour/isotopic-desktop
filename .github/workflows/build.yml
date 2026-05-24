@@ -53,8 +53,8 @@ jobs:
         run: |
           sudo cp --recursive build_files/. /
 
-      - name: Build image
-        id: build_image
+      - name: Build
+        id: build
         uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 # v2
         with:
           containerfiles: ./Containerfile
@@ -67,8 +67,8 @@ jobs:
         id: push
         if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
         with:
-          image: ${{ steps.build_image.outputs.image }}
-          tags: ${{ steps.build_image.outputs.tags }}
+          image: ${{ steps.build.outputs.image }}
+          tags: ${{ steps.build.outputs.tags }}
           registry: ${{ env.IMAGE_REGISTRY }}
           username: ${{ env.REGISTRY_USER }}
           password: ${{ env.REGISTRY_PASSWORD }}
@@ -88,6 +88,6 @@ jobs:
           cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${REGISTRY}/${NAME}@${DIGEST}
         env:
           REGISTRY: ${{ env.IMAGE_REGISTRY }}
-          NAME: ${{ steps.build_image.outputs.image }}
+          NAME: ${{ steps.build.outputs.image }}
           DIGEST: ${{ steps.push.outputs.digest }}
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
