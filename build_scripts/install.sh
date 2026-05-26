@@ -23,6 +23,7 @@ dnf install --assumeyes \
     igt-gpu-tools \
     neovim \
     osbuild-selinux \
+    python3-keyring \
     tmux \
     usbguard \
     usbguard-notifier \
