@@ -52,7 +52,7 @@ jobs:
 
       - name: Change containers signature policy file
         run: |
-          /usr/bin/sudo /usr/bin/cp --recursive build_files/. /
+          sudo cp --recursive build_files/. /
 
       - name: Build
         id: build
@@ -65,9 +65,9 @@ jobs:
           for tag in ${IMAGE_TAGS}; do
             if [ -z "${image_with_tag}" ]; then
               image_with_tag="${IMAGE_NAME}:${tag}"
-              /usr/bin/buildah bud --file "${GITHUB_WORKSPACE}/Containerfile" --format oci --tag "${image_with_tag}" "${GITHUB_WORKSPACE}"
+              buildah bud --file "${GITHUB_WORKSPACE}/Containerfile" --format oci --tag "${image_with_tag}" "${GITHUB_WORKSPACE}"
             else
-              /usr/bin/buildah tag "${image_with_tag}" "${IMAGE_NAME}:${tag}"
+              buildah tag "${image_with_tag}" "${IMAGE_NAME}:${tag}"
             fi
           done
 
@@ -79,7 +79,7 @@ jobs:
         env:
           IMAGE_WITH_TAG: ${{ steps.build.outputs.image-with-tag }}
         run: |
-          /usr/bin/podman run --rm localhost/${IMAGE_WITH_TAG} bootc container lint --fatal-warnings
+          podman run --rm localhost/${IMAGE_WITH_TAG} bootc container lint --fatal-warnings
 
       - name: Push to registry
         id: push
@@ -90,7 +90,7 @@ jobs:
           set -x
 
           for tag in "${IMAGE_TAGS}"; do
-            /usr/bin/podman push --quiet --digestfile digest.txt --creds="${REGISTRY_USER}:{REGISTRY_PASSWORD}" "${IMAGE_NAME}:${tag}" "${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${tag}"
+            podman push --quiet --digestfile digest.txt --creds="${REGISTRY_USER}:{REGISTRY_PASSWORD}" "${IMAGE_NAME}:${tag}" "${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${tag}"
           done
 
           {
@@ -100,7 +100,7 @@ jobs:
       - name: Login to GitHub Container Registry
         if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
         run: |
-          /usr/bin/podman login --username "${REGISTRY_USER}" --password "{REGISTRY_PASSWORD}" "${REGISTRY}"
+          podman login --username "${REGISTRY_USER}" --password "{REGISTRY_PASSWORD}" "${REGISTRY}"
 
       - name: Sign image with a key
         if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
@@ -108,4 +108,4 @@ jobs:
           DIGEST: ${{ steps.push.outputs.digest }}
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
         run: |
-          /usr/bin/cosign sign --yes --key env://COSIGN_PRIVATE_KEY "${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}@${DIGEST}"
+          cosign sign --yes --key env://COSIGN_PRIVATE_KEY "${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}@${DIGEST}"
