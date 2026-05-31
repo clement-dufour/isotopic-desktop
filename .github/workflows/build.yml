@@ -20,6 +20,7 @@ on:
   workflow_dispatch:
 
 env:
+  REGISTRY: ghcr.io
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
   IMAGE_NAME: ${{ github.event.repository.name }}
   IMAGE_TAGS: latest ${{ github.sha }}
@@ -55,12 +56,24 @@ jobs:
 
       - name: Build
         id: build
-        uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 # v2
-        with:
-          containerfiles: ./Containerfile
-          image: ${{ env.IMAGE_NAME }}
-          tags: ${{ env.IMAGE_TAGS }}
-          oci: true
+        shell: bash
+        run: |
+          set -oue pipefail
+          set -x
+
+          image_with_tag=""
+          for tag in ${IMAGE_TAGS}; do
+            if [ -z "${image_with_tag}" ]; then
+              image_with_tag="${IMAGE_NAME}:${tag}"
+              /usr/bin/buildah bud --file "${GITHUB_WORKSPACE}/Containerfile" --format oci --tag "${image_with_tag}" "${GITHUB_WORKSPACE}"
+            else
+              /usr/bin/buildah tag "${image_with_tag}" "${IMAGE_NAME}:${tag}"
+            fi
+          done
+
+          {
+            printf 'image_with_tag=%s\n' "${image_with_tag}"
+          } >> ${GITHUB_OUTPUT}
 
       - name: Perform static analysis checks
         env:
@@ -69,23 +82,25 @@ jobs:
           /usr/bin/podman run --rm localhost/${IMAGE_WITH_TAG} bootc container lint --fatal-warnings
 
       - name: Push to registry
-        uses: redhat-actions/push-to-registry@5ed88d269cf581ea9ef6dd6806d01562096bee9c # v2
         id: push
         if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-        with:
-          image: ${{ steps.build.outputs.image }}
-          tags: ${{ steps.build.outputs.tags }}
-          registry: ${{ env.IMAGE_REGISTRY }}
-          username: ${{ env.REGISTRY_USER }}
-          password: ${{ env.REGISTRY_PASSWORD }}
+        shell: bash
+        run: |
+          set -oue pipefail
+          set -x
+
+          for tag in "${IMAGE_TAGS}"; do
+            /usr/bin/podman push --quiet --digestfile digest.txt --creds="${REGISTRY_USER}:{REGISTRY_PASSWORD}" "${IMAGE_NAME}:${tag}" "${IMAGE_REGISTRY}/${IMAGE_NAME}:${tag}"
+          done
+
+          {
+            printf 'digest=%s\n' "$(head -n 1 digest.txt)"
+          } >> ${GITHUB_OUTPUT}
 
       - name: Login to GitHub Container Registry
-        uses: redhat-actions/podman-login@4934294ad0449894bcd1e9f191899d7292469603 # v1
         if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-        with:
-          registry: ghcr.io
-          username: ${{ env.REGISTRY_USER }}
-          password: ${{ env.REGISTRY_PASSWORD }}
+        run: |
+          /usr/bin/podman login --username "${REGISTRY_USER}" --password "{REGISTRY_PASSWORD}" "${REGISTRY}"
 
       - name: Sign image with a key
         if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
