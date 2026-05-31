@@ -72,7 +72,7 @@ jobs:
           done
 
           {
-            printf 'image_with_tag=%s\n' "${image_with_tag}"
+            printf 'image-with-tag=%s\n' "${image_with_tag}"
           } >> ${GITHUB_OUTPUT}
 
       - name: Perform static analysis checks
