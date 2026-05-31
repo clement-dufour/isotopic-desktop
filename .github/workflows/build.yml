@@ -24,8 +24,6 @@ env:
   NAMESPACE: ${{ github.repository_owner }}
   IMAGE_NAME: ${{ github.event.repository.name }}
   IMAGE_TAGS: latest ${{ github.sha }}
-  REGISTRY_USER: ${{ github.actor }}
-  REGISTRY_PASSWORD: ${{ github.token }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
@@ -83,6 +81,9 @@ jobs:
       - name: Push to registry
         id: push
         if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+        env:
+          REGISTRY_USER: ${{ github.actor }}
+          REGISTRY_PASSWORD: ${{ github.token }}
         shell: bash
         run: |
           set -oue pipefail
@@ -95,8 +96,11 @@ jobs:
             printf 'digest=%s\n' "$(head -n 1 digest.txt)"
           } >> ${GITHUB_OUTPUT}
 
-      - name: Login to GitHub Container Registry
+      - name: Login to container registry
         if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+        env:
+          REGISTRY_USER: ${{ github.actor }}
+          REGISTRY_PASSWORD: ${{ github.token }}
         run: |
           podman login --username "${REGISTRY_USER}" --password "${REGISTRY_PASSWORD}" "${REGISTRY}"
           ln --symbolic --force ${XDG_RUNTIME_DIR}/containers/auth.json ${HOME}/.docker/config.json
@@ -108,3 +112,8 @@ jobs:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
         run: |
           cosign sign --yes --key env://COSIGN_PRIVATE_KEY "${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}@${DIGEST}"
+
+      - name: Logout from container registry
+        if: always()
+        run: |
+          podman logout "${REGISTRY}"
