@@ -78,24 +78,6 @@ jobs:
         run: |
           podman run --rm localhost/${IMAGE_WITH_TAG} bootc container lint --fatal-warnings
 
-      - name: Push to registry
-        id: push
-        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-        env:
-          REGISTRY_USER: ${{ github.actor }}
-          REGISTRY_PASSWORD: ${{ github.token }}
-        shell: bash
-        run: |
-          set -oue pipefail
-
-          for tag in ${IMAGE_TAGS}; do
-            podman push --digestfile digest.txt --creds "${REGISTRY_USER}:${REGISTRY_PASSWORD}" "${IMAGE_NAME}:${tag}" "${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${tag}"
-          done
-
-          {
-            printf 'digest=%s\n' "$(head -n 1 digest.txt)"
-          } >> ${GITHUB_OUTPUT}
-
       - name: Login to container registry
         if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
         env:
@@ -104,6 +86,21 @@ jobs:
         run: |
           podman login --username "${REGISTRY_USER}" --password "${REGISTRY_PASSWORD}" "${REGISTRY}"
           ln --symbolic --force ${XDG_RUNTIME_DIR}/containers/auth.json ${HOME}/.docker/config.json
+
+      - name: Push to registry
+        id: push
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -oue pipefail
+
+          for tag in ${IMAGE_TAGS}; do
+            podman push --digestfile digest.txt "${IMAGE_NAME}:${tag}" "${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${tag}"
+          done
+
+          {
+            printf 'digest=%s\n' "$(head -n 1 digest.txt)"
+          } >> ${GITHUB_OUTPUT}
 
       - name: Sign image with a key
         if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
