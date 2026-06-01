@@ -48,9 +48,37 @@ jobs:
       - name: Install Cosign
         uses: sigstore/cosign-installer@7e8b541eb2e61bf99390e1afd4be13a184e9ebc5 # v3.10.1
 
-      - name: Change containers signature policy file
+      - name: Change containers signature policy
         run: |
-          sudo cp --recursive build_files/. /
+          mkdir -p "${HOME}/.config/containers/registries.d"
+
+          cat << EOF > "${HOME}/.config/containers/registries.d/default-docker.yaml"
+          default-docker:
+            use-sigstore-attachments: true
+          EOF
+
+          cat << EOF > "${HOME}/.config/containers/policy.json"
+          {
+            "default": [
+              {
+                "type": "reject"
+              }
+            ],
+            "transports": {
+              "docker": {
+                "quay.io/fedora-ostree-desktops": [
+                  {
+                    "type": "sigstoreSigned",
+                    "keyData": "$(base64 -w 0 "${GITHUB_WORKSPACE}/quay.io-fedora-ostree-desktops.pub")",
+                    "signedIdentity": {
+                        "type": "matchRepository"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+          EOF
 
       - name: Build
         id: build
