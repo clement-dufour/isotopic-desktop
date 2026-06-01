@@ -79,6 +79,7 @@ jobs:
           podman run --rm localhost/${IMAGE_WITH_TAG} bootc container lint --fatal-warnings
 
       - name: Login to container registry
+        id: login
         if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
         env:
           REGISTRY_USER: ${{ github.actor }}
@@ -111,6 +112,6 @@ jobs:
           cosign sign --yes --key env://COSIGN_PRIVATE_KEY "${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}@${DIGEST}"
 
       - name: Logout from container registry
-        if: always()
+        if: (steps.login.outcome == 'success' || steps.login.outcome == 'failure' )
         run: |
           podman logout "${REGISTRY}"
