@@ -1,0 +1,135 @@
+name: Build image
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '**'
+      - '!**/README.org'
+      - '!.forgejo/**'
+      - '.forgejo/workflows/build.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - '**'
+      - '!**/README.org'
+      - '!.forgejo/**'
+      - '.forgejo/workflows/build.yml'
+  workflow_dispatch:
+
+env:
+  REGISTRY: forgejo.clmnt.xyz
+  NAMESPACE: ${{ forgejo.repository_owner }}
+  IMAGE_NAME: ${{ forgejo.event.repository.name }}
+  IMAGE_TAGS: latest ${{ forgejo.sha }}
+
+  PODMAN_LOGLEVEL: warn # warn is the default value
+
+concurrency:
+  group: ${{ forgejo.workflow }}-${{ forgejo.ref || forgejo.run_id }}
+  cancel-in-progress: ${{ forgejo.event_name == 'pull_request' }}
+
+jobs:
+  build-push:
+    name: Build image
+    runs-on: podman
+    container:
+      image: ghcr.io/clement-dufour/actions-runner
+    strategy:
+      fail-fast: false
+
+    # key not yet supported on forgejo, keeping it for reference
+    # permissions:
+    #   contents: read
+    #   packages: write # needed for pushing package to GHCR
+    #   #id-token: write # needed for signing the images with GitHub OIDC Token
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+
+      - name: Change containers signature policy
+        run: |
+          mkdir -p "${HOME}/.config/containers/registries.d"
+
+          cat << EOF > "${HOME}/.config/containers/registries.d/default-docker.yaml"
+          default-docker:
+            use-sigstore-attachments: true
+          EOF
+
+          cat << EOF > "${HOME}/.config/containers/policy.json"
+          {
+            "default": [
+              {
+                "type": "reject"
+              }
+            ],
+            "transports": {
+              "docker": {
+                "quay.io/fedora-ostree-desktops": [
+                  {
+                    "type": "sigstoreSigned",
+                    "keyData": "$(base64 -w 0 "${FORGEJO_WORKSPACE}/quay.io-fedora-ostree-desktops.pub")",
+                    "signedIdentity": {
+                        "type": "matchRepository"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+          EOF
+
+      - name: Build
+        id: build
+        shell: bash
+        run: |
+          set -oue pipefail
+
+          image_with_tag=""
+          for tag in ${IMAGE_TAGS}; do
+            if [ -z "${image_with_tag}" ]; then
+              image_with_tag="${IMAGE_NAME}:${tag}"
+              buildah --log-level "${PODMAN_LOGLEVEL}" bud --file "${FORGEJO_WORKSPACE}/Containerfile" --format oci --tag "${image_with_tag}" "${FORGEJO_WORKSPACE}"
+            else
+              buildah --log-level "${PODMAN_LOGLEVEL}" tag "${image_with_tag}" "${IMAGE_NAME}:${tag}"
+            fi
+          done
+
+          {
+            printf 'image-with-tag=%s\n' "${image_with_tag}"
+          } >> "${FORGEJO_OUTPUT}"
+
+      - name: Perform static analysis checks
+        env:
+          IMAGE_WITH_TAG: ${{ steps.build.outputs.image-with-tag }}
+        run: |
+          podman --log-level "${PODMAN_LOGLEVEL}" run --rm localhost/${IMAGE_WITH_TAG} bootc container lint --fatal-warnings
+
+      - name: Login to container registry
+        id: login
+        if: (forgejo.event_name == 'push' || forgejo.event_name == 'workflow_dispatch') && forgejo.ref == 'refs/heads/main'
+        env:
+          REGISTRY_USER: ${{ forgejo.actor }}
+          REGISTRY_PASSWORD: ${{ secrets.TOKEN_PACKAGES_RW }}
+        run: |
+          podman --log-level "${PODMAN_LOGLEVEL}" login --username "${REGISTRY_USER}" --password "${REGISTRY_PASSWORD}" "${REGISTRY}"
+
+      - name: Push to registry
+        id: push
+        if: (forgejo.event_name == 'push' || forgejo.event_name == 'workflow_dispatch') && forgejo.ref == 'refs/heads/main'
+        env:
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+        shell: bash
+        run: |
+          set -oue pipefail
+
+          for tag in ${IMAGE_TAGS}; do
+            podman --log-level "${PODMAN_LOGLEVEL}" push --sign-by-sigstore-private-key <(printf '%s\n' "${COSIGN_PRIVATE_KEY}") "${IMAGE_NAME}:${tag}" "${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${tag}"
+          done
+
+      - name: Logout from container registry
+        if: (steps.login.outcome == 'success' || steps.login.outcome == 'failure' )
+        run: |
+          podman --log-level "${PODMAN_LOGLEVEL}" logout "${REGISTRY}"
