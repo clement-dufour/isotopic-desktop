@@ -17,6 +17,10 @@ on:
       - '!.forgejo/**'
       - '.forgejo/workflows/build.yml'
   workflow_dispatch:
+  schedule:
+    # Build every day at 5:00 AM
+    # fedora-bootc image is built around 4:30 AM
+    - cron: '0 5 * * *'
 
 env:
   REGISTRY: forgejo.clmnt.xyz
