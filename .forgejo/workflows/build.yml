@@ -24,7 +24,7 @@ env:
   IMAGE_NAME: ${{ forgejo.event.repository.name }}
   IMAGE_TAGS: latest ${{ forgejo.sha }}
 
-  PODMAN_LOGLEVEL: warn # warn is the default value
+  LOGLEVEL: warn # warn is the default value
 
 concurrency:
   group: ${{ forgejo.workflow }}-${{ forgejo.ref || forgejo.run_id }}
@@ -91,9 +91,9 @@ jobs:
           for tag in ${IMAGE_TAGS}; do
             if [ -z "${image_with_tag}" ]; then
               image_with_tag="${IMAGE_NAME}:${tag}"
-              buildah --log-level "${PODMAN_LOGLEVEL}" bud --file "${FORGEJO_WORKSPACE}/Containerfile" --format oci --tag "${image_with_tag}" "${FORGEJO_WORKSPACE}"
+              buildah --log-level "${LOGLEVEL}" bud --file "${FORGEJO_WORKSPACE}/Containerfile" --format oci --tag "${image_with_tag}" "${FORGEJO_WORKSPACE}"
             else
-              buildah --log-level "${PODMAN_LOGLEVEL}" tag "${image_with_tag}" "${IMAGE_NAME}:${tag}"
+              buildah --log-level "${LOGLEVEL}" tag "${image_with_tag}" "${IMAGE_NAME}:${tag}"
             fi
           done
 
@@ -105,7 +105,7 @@ jobs:
         env:
           IMAGE_WITH_TAG: ${{ steps.build.outputs.image-with-tag }}
         run: |
-          podman --log-level "${PODMAN_LOGLEVEL}" run --rm localhost/${IMAGE_WITH_TAG} bootc container lint --fatal-warnings
+          podman --log-level "${LOGLEVEL}" run --rm localhost/${IMAGE_WITH_TAG} bootc container lint --fatal-warnings
 
       - name: Login to container registry
         id: login
@@ -114,7 +114,7 @@ jobs:
           REGISTRY_USER: ${{ forgejo.actor }}
           REGISTRY_PASSWORD: ${{ secrets.TOKEN_PACKAGES_RW }}
         run: |
-          podman --log-level "${PODMAN_LOGLEVEL}" login --username "${REGISTRY_USER}" --password "${REGISTRY_PASSWORD}" "${REGISTRY}"
+          podman --log-level "${LOGLEVEL}" login --username "${REGISTRY_USER}" --password "${REGISTRY_PASSWORD}" "${REGISTRY}"
 
       - name: Push to registry
         id: push
@@ -126,13 +126,13 @@ jobs:
           set -oue pipefail
 
           for tag in ${IMAGE_TAGS}; do
-            podman --log-level "${PODMAN_LOGLEVEL}" push --sign-by-sigstore-private-key <(printf '%s\n' "${COSIGN_PRIVATE_KEY}") "${IMAGE_NAME}:${tag}" "${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${tag}"
+            podman --log-level "${LOGLEVEL}" push --sign-by-sigstore-private-key <(printf '%s\n' "${COSIGN_PRIVATE_KEY}") "${IMAGE_NAME}:${tag}" "${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${tag}"
           done
 
       - name: Logout from container registry
         if: always() && (steps.login.outcome == 'success' || steps.login.outcome == 'failure' )
         run: |
-          podman --log-level "${PODMAN_LOGLEVEL}" logout "${REGISTRY}"
+          podman --log-level "${LOGLEVEL}" logout "${REGISTRY}"
 
   cleanup:
     name: Cleanup
@@ -148,6 +148,6 @@ jobs:
           set -oue pipefail
 
           for tag in ${IMAGE_TAGS}; do
-            podman --log-level "${PODMAN_LOGLEVEL}" image rm "${IMAGE_NAME}:${tag}"
+            podman --log-level "${LOGLEVEL}" image rm "${IMAGE_NAME}:${tag}"
           done
-          podman --log-level "${PODMAN_LOGLEVEL}" system prune --force
+          podman --log-level "${LOGLEVEL}" system prune --force
