@@ -28,7 +28,7 @@ env:
   IMAGE_NAME: ${{ forgejo.event.repository.name }}
   IMAGE_TAGS: latest ${{ forgejo.sha }}
 
-  LOGLEVEL: warn # warn is the default value
+  LOGLEVEL: debug # warn is the default value
 
 concurrency:
   group: ${{ forgejo.workflow }}-${{ forgejo.ref || forgejo.run_id }}
