@@ -2,40 +2,15 @@
     "default": [{"type": "reject"}],
     "transports": {
         "docker": {
-            "ghcr.io/clement-dufour": [
+            "forgejo.clmnt.xyz/clmnt": [
                 {
                     "type": "sigstoreSigned",
-                    "keyPath": "/etc/pki/containers/ghcr.io-clement-dufour.pub",
+                    "keyPath": "/etc/pki/containers/forgejo.clmnt.xyz-clmnt.pub",
                     "signedIdentity": {
                         "type": "matchRepository"
                     }
                 }
-            ],
-            "quay.io/toolbx-images": [
-                {
-                    "type": "sigstoreSigned",
-                    "keyPath": "/etc/pki/containers/quay.io-toolbx-images.pub",
-                    "signedIdentity": {
-                        "type": "matchRepository"
-                    }
-                }
-            ],
-            "quay.io/fedora-ostree-desktops": [
-                {
-                    "type": "sigstoreSigned",
-                    "keyPath": "/etc/pki/containers/quay.io-fedora-ostree-desktops.pub",
-                    "signedIdentity": {
-                        "type": "matchRepository"
-                    }
-                }
-            ],
-            "": [{"type": "insecureAcceptAnything"}]
-        },
-        "dir": {
-            "": [{"type": "insecureAcceptAnything"}]
-        },
-        "containers-storage": {
-            "": [{"type": "insecureAcceptAnything"}]
+            ]
         }
     }
 }
