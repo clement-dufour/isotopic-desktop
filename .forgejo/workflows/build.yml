@@ -130,6 +130,24 @@ jobs:
           done
 
       - name: Logout from container registry
-        if: (steps.login.outcome == 'success' || steps.login.outcome == 'failure' )
+        if: always() && (steps.login.outcome == 'success' || steps.login.outcome == 'failure' )
         run: |
           podman --log-level "${PODMAN_LOGLEVEL}" logout "${REGISTRY}"
+
+  cleanup:
+    name: Cleanup
+    if: always()
+    needs: [build-push]
+    runs-on: podman
+    container:
+      image: ghcr.io/clement-dufour/actions-runner
+
+    steps:
+      - name: Cleanup local image storage
+        run: |
+          set -oue pipefail
+
+          for tag in ${IMAGE_TAGS}; do
+            podman --log-level "${PODMAN_LOGLEVEL}" image rm "${IMAGE_NAME}:${tag}"
+          done
+          podman --log-level "${PODMAN_LOGLEVEL}" system prune --force
