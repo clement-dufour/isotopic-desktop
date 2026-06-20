@@ -1,10 +1,44 @@
-FROM scratch AS build_scripts
-COPY build_scripts /
-
 FROM quay.io/fedora-ostree-desktops/silverblue:44@sha256:2c170c8517deaa8e447d9023544778f66d8d390fda5ccd770d41d5706efdbf7a
 COPY image_files /
 
-RUN --mount=type=bind,from=build_scripts,source=/,target=/build_scripts \
-    --mount=type=tmpfs,target=/var \
-    /build_scripts/install.sh && \
-    ostree container commit
+RUN --mount=type=tmpfs,target=/var << 'EOF'
+set -euo pipefail
+set -x
+
+dnf config-manager disable \
+    updates-archive \
+    fedora-cisco-openh264 \
+
+
+dnf remove --assumeyes \
+    firefox \
+    firefox-langpacks \
+    gnome-software-rpm-ostree \
+    gnome-tour \
+
+
+dnf install --assumeyes \
+    adw-gtk3-theme \
+    ddcutil \
+    fzf \
+    gvfs-nfs \
+    igt-gpu-tools \
+    neovim \
+    osbuild-selinux \
+    tmux \
+    usbguard \
+    usbguard-notifier \
+
+
+dnf clean all
+
+systemctl preset-all
+
+KERNEL_VERSION=$(rpm --query --queryformat "%{VERSION}-%{RELEASE}.%{ARCH}\n" kernel)
+dracut --kver "${KERNEL_VERSION}" --force --add ostree --nostrip --verbose \
+    --no-hostonly --zstd --reproducible \
+    "/lib/modules/${KERNEL_VERSION}/initramfs.img"
+chmod 0600 "/lib/modules/${KERNEL_VERSION}/initramfs.img"
+
+ostree container commit
+EOF
