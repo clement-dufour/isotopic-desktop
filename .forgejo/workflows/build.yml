@@ -85,7 +85,7 @@ jobs:
         id: build
         shell: bash
         run: |
-          set -oue pipefail
+          set -euo pipefail
 
           image_with_tag=""
           for tag in ${IMAGE_TAGS}; do
@@ -123,7 +123,7 @@ jobs:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
         shell: bash
         run: |
-          set -oue pipefail
+          set -euo pipefail
 
           for tag in ${IMAGE_TAGS}; do
             podman --log-level "${LOGLEVEL}" push --sign-by-sigstore-private-key <(printf '%s\n' "${COSIGN_PRIVATE_KEY}") "${IMAGE_NAME}:${tag}" "${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${tag}"
@@ -145,7 +145,7 @@ jobs:
     steps:
       - name: Cleanup local image storage
         run: |
-          set -oue pipefail
+          set -euo pipefail
 
           for tag in ${IMAGE_TAGS}; do
             podman --log-level "${LOGLEVEL}" image rm "${IMAGE_NAME}:${tag}"
