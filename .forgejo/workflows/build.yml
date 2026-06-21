@@ -55,6 +55,7 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
       - name: change containers signature policy
+        shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
           mkdir -p "${HOME}/.config/containers/registries.d"
 
@@ -107,6 +108,7 @@ jobs:
       - name: perform static analysis checks
         env:
           IMAGE_WITH_TAG: ${{ steps.build.outputs.image-with-tag }}
+        shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
           podman --log-level "${LOGLEVEL}" run --rm ${IMAGE_WITH_TAG} bootc container lint --fatal-warnings
 
@@ -116,6 +118,7 @@ jobs:
         env:
           REGISTRY_USER: ${{ forgejo.actor }}
           REGISTRY_PASSWORD: ${{ secrets.TOKEN_PACKAGES_RW }}
+        shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
           podman --log-level "${LOGLEVEL}" login --username "${REGISTRY_USER}" --password "${REGISTRY_PASSWORD}" "${REGISTRY}"
 
@@ -132,6 +135,7 @@ jobs:
 
       - name: logout from container registry
         if: always() && (steps.login.outcome == 'success' || steps.login.outcome == 'failure' )
+        shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
           podman --log-level "${LOGLEVEL}" logout "${REGISTRY}"
 
