@@ -24,9 +24,8 @@ on:
 
 env:
   REGISTRY: forgejo.clmnt.xyz
-  NAMESPACE: ${{ forgejo.repository_owner }}
-  IMAGE_NAME: ${{ forgejo.event.repository.name }}
-  IMAGE_TAGS: latest ${{ forgejo.sha }}
+  REPOSITORY: ${{ forgejo.repository }}
+  IMAGE_TAGS: ${{ forgejo.sha }} latest
 
   LOGLEVEL: debug # warn is the default value
 
@@ -94,10 +93,10 @@ jobs:
           image_with_tag=""
           for tag in ${IMAGE_TAGS}; do
             if [ -z "${image_with_tag}" ]; then
-              image_with_tag="${IMAGE_NAME}:${tag}"
+              image_with_tag="${REGISTRY}/${REPOSITORY}:${tag}"
               buildah --log-level "${LOGLEVEL}" bud --file "${FORGEJO_WORKSPACE}/Containerfile" --format oci --tag "${image_with_tag}" "${FORGEJO_WORKSPACE}"
             else
-              buildah --log-level "${LOGLEVEL}" tag "${image_with_tag}" "${IMAGE_NAME}:${tag}"
+              buildah --log-level "${LOGLEVEL}" tag "${image_with_tag}" "${REGISTRY}/${REPOSITORY}:${tag}"
             fi
           done
 
@@ -109,7 +108,7 @@ jobs:
         env:
           IMAGE_WITH_TAG: ${{ steps.build.outputs.image-with-tag }}
         run: |
-          podman --log-level "${LOGLEVEL}" run --rm localhost/${IMAGE_WITH_TAG} bootc container lint --fatal-warnings
+          podman --log-level "${LOGLEVEL}" run --rm ${IMAGE_WITH_TAG} bootc container lint --fatal-warnings
 
       - name: login to container registry
         id: login
@@ -130,7 +129,7 @@ jobs:
           set -euo pipefail
 
           for tag in ${IMAGE_TAGS}; do
-            podman --log-level "${LOGLEVEL}" push --sign-by-sigstore-private-key <(printf '%s\n' "${COSIGN_PRIVATE_KEY}") "${IMAGE_NAME}:${tag}" "${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${tag}"
+            podman --log-level "${LOGLEVEL}" push --sign-by-sigstore-private-key <(printf '%s\n' "${COSIGN_PRIVATE_KEY}") "${REGISTRY}/${REPOSITORY}:${tag}"
           done
 
       - name: logout from container registry
@@ -152,6 +151,6 @@ jobs:
           set -euo pipefail
 
           for tag in ${IMAGE_TAGS}; do
-            podman --log-level "${LOGLEVEL}" image rm "${IMAGE_NAME}:${tag}"
+            podman --log-level "${LOGLEVEL}" image rm "${REGISTRY}/${REPOSITORY}:${tag}"
           done
           podman --log-level "${LOGLEVEL}" system prune --force
