@@ -38,7 +38,7 @@ jobs:
     name: build image
     runs-on: podman
     container:
-      image: ghcr.io/clement-dufour/actions-runner
+      image: ghcr.io/clement-dufour/actions-runner@sha256:715faeb253440230bc1df95de64064bf73f989f21069559ac6e96b5f90ee2afa
       options:
         --volume containers_storage:/home/podman/.local/share/containers/storage:z
     strategy:
@@ -141,7 +141,7 @@ jobs:
     needs: [build-push]
     runs-on: podman
     container:
-      image: ghcr.io/clement-dufour/actions-runner
+      image: ghcr.io/clement-dufour/actions-runner@sha256:715faeb253440230bc1df95de64064bf73f989f21069559ac6e96b5f90ee2afa
       options:
         --volume containers_storage:/home/podman/.local/share/containers/storage:z
 
