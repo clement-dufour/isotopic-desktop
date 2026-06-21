@@ -2,7 +2,7 @@ FROM quay.io/fedora-ostree-desktops/silverblue:44@sha256:e4786f02be034bf0c6581aa
 COPY image_files /
 
 RUN --mount=type=tmpfs,target=/var << 'EOF'
-set -euo pipefail
+set -e -o nounset -o pipefail
 set -x
 
 dnf config-manager disable \
