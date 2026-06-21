@@ -27,7 +27,7 @@ env:
   REPOSITORY: ${{ forgejo.repository }}
   IMAGE_TAGS: ${{ forgejo.sha }} latest
 
-  LOGLEVEL: warn # warn is the default value
+  LOGLEVEL: debug # warn is the default value
 
 concurrency:
   group: ${{ forgejo.workflow }}-${{ forgejo.ref || forgejo.run_id }}
