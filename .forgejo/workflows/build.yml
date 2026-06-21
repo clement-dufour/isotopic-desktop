@@ -86,10 +86,8 @@ jobs:
 
       - name: build
         id: build
-        shell: bash
+        shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
-          set -euo pipefail
-
           image_with_tag=""
           for tag in ${IMAGE_TAGS}; do
             if [ -z "${image_with_tag}" ]; then
@@ -124,10 +122,8 @@ jobs:
         if: (forgejo.event_name == 'push' || forgejo.event_name == 'workflow_dispatch') && forgejo.ref == 'refs/heads/main'
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
-        shell: bash
+        shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
-          set -euo pipefail
-
           for tag in ${IMAGE_TAGS}; do
             podman --log-level "${LOGLEVEL}" push --sign-by-sigstore-private-key <(printf '%s\n' "${COSIGN_PRIVATE_KEY}") "${REGISTRY}/${REPOSITORY}:${tag}"
           done
@@ -147,9 +143,8 @@ jobs:
 
     steps:
       - name: cleanup local image storage
+        shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
-          set -euo pipefail
-
           for tag in ${IMAGE_TAGS}; do
             podman --log-level "${LOGLEVEL}" image rm "${REGISTRY}/${REPOSITORY}:${tag}"
           done
