@@ -5,7 +5,9 @@ on:
       - main
     paths:
       - '**'
+      - '!**/README.md'
       - '!**/README.org'
+      - '!**/renovate.json'
       - '!.forgejo/**'
       - '.forgejo/workflows/build.yml'
   push:
@@ -13,7 +15,9 @@ on:
       - main
     paths:
       - '**'
+      - '!**/README.md'
       - '!**/README.org'
+      - '!**/renovate.json'
       - '!.forgejo/**'
       - '.forgejo/workflows/build.yml'
   workflow_dispatch:
