@@ -1,4 +1,4 @@
-name: Build image
+name: build image
 on:
   pull_request:
     branches:
@@ -36,7 +36,7 @@ concurrency:
 
 jobs:
   build-push:
-    name: Build image
+    name: build image
     runs-on: podman
     container:
       image: ghcr.io/clement-dufour/actions-runner
@@ -50,10 +50,10 @@ jobs:
     #   #id-token: write # needed for signing the images with GitHub OIDC Token
 
     steps:
-      - name: Checkout repository
+      - name: checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
 
-      - name: Change containers signature policy
+      - name: change containers signature policy
         run: |
           mkdir -p "${HOME}/.config/containers/registries.d"
 
@@ -85,7 +85,7 @@ jobs:
           }
           EOF
 
-      - name: Build
+      - name: build
         id: build
         shell: bash
         run: |
@@ -105,13 +105,13 @@ jobs:
             printf 'image-with-tag=%s\n' "${image_with_tag}"
           } >> "${FORGEJO_OUTPUT}"
 
-      - name: Perform static analysis checks
+      - name: perform static analysis checks
         env:
           IMAGE_WITH_TAG: ${{ steps.build.outputs.image-with-tag }}
         run: |
           podman --log-level "${LOGLEVEL}" run --rm localhost/${IMAGE_WITH_TAG} bootc container lint --fatal-warnings
 
-      - name: Login to container registry
+      - name: login to container registry
         id: login
         if: (forgejo.event_name == 'push' || forgejo.event_name == 'workflow_dispatch') && forgejo.ref == 'refs/heads/main'
         env:
@@ -120,7 +120,7 @@ jobs:
         run: |
           podman --log-level "${LOGLEVEL}" login --username "${REGISTRY_USER}" --password "${REGISTRY_PASSWORD}" "${REGISTRY}"
 
-      - name: Push to registry
+      - name: push to registry
         id: push
         if: (forgejo.event_name == 'push' || forgejo.event_name == 'workflow_dispatch') && forgejo.ref == 'refs/heads/main'
         env:
@@ -133,13 +133,13 @@ jobs:
             podman --log-level "${LOGLEVEL}" push --sign-by-sigstore-private-key <(printf '%s\n' "${COSIGN_PRIVATE_KEY}") "${IMAGE_NAME}:${tag}" "${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${tag}"
           done
 
-      - name: Logout from container registry
+      - name: logout from container registry
         if: always() && (steps.login.outcome == 'success' || steps.login.outcome == 'failure' )
         run: |
           podman --log-level "${LOGLEVEL}" logout "${REGISTRY}"
 
   cleanup:
-    name: Cleanup
+    name: cleanup
     if: always()
     needs: [build-push]
     runs-on: podman
@@ -147,7 +147,7 @@ jobs:
       image: ghcr.io/clement-dufour/actions-runner
 
     steps:
-      - name: Cleanup local image storage
+      - name: cleanup local image storage
         run: |
           set -euo pipefail
 
