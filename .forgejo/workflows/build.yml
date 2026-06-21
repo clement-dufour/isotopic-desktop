@@ -39,6 +39,8 @@ jobs:
     runs-on: podman
     container:
       image: ghcr.io/clement-dufour/actions-runner
+      options:
+        --volume containers_storage:/home/podman/.local/share/containers/storage:z
     strategy:
       fail-fast: false
 
@@ -140,6 +142,8 @@ jobs:
     runs-on: podman
     container:
       image: ghcr.io/clement-dufour/actions-runner
+      options:
+        --volume containers_storage:/home/podman/.local/share/containers/storage:z
 
     steps:
       - name: cleanup local image storage
