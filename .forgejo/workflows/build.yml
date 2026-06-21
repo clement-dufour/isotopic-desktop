@@ -150,6 +150,6 @@ jobs:
         shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
           for tag in ${IMAGE_TAGS}; do
-            podman --log-level "${LOGLEVEL}" image rm "${REGISTRY}/${REPOSITORY}:${tag}"
+            podman --log-level "${LOGLEVEL}" image rm "${REGISTRY}/${REPOSITORY}:${tag}" || true
           done
           podman --log-level "${LOGLEVEL}" system prune --force
