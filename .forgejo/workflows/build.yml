@@ -38,7 +38,7 @@ jobs:
     name: build image
     runs-on: podman
     container:
-      image: ghcr.io/clement-dufour/actions-runner@sha256:715faeb253440230bc1df95de64064bf73f989f21069559ac6e96b5f90ee2afa
+      image: forgejo.clmnt.xyz/clmnt/actions-runner:latest@sha256:072257b51a88ed3700c63c3209394a2b6f290c0ecfe9ef457b5ceaf2ea89aed5
       options:
         --volume containers_storage:/home/podman/.local/share/containers/storage:z
     strategy:
@@ -145,7 +145,7 @@ jobs:
   #   needs: [build-push]
   #   runs-on: podman
   #   container:
-  #     image: ghcr.io/clement-dufour/actions-runner@sha256:715faeb253440230bc1df95de64064bf73f989f21069559ac6e96b5f90ee2afa
+  #     image: forgejo.clmnt.xyz/clmnt/actions-runner:latest@sha256:072257b51a88ed3700c63c3209394a2b6f290c0ecfe9ef457b5ceaf2ea89aed5
   #     options:
   #       --volume containers_storage:/home/podman/.local/share/containers/storage:z
 
