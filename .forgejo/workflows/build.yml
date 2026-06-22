@@ -139,21 +139,21 @@ jobs:
         run: |
           podman --log-level "${LOGLEVEL}" logout "${REGISTRY}"
 
-  cleanup:
-    name: cleanup
-    if: always()
-    needs: [build-push]
-    runs-on: podman
-    container:
-      image: ghcr.io/clement-dufour/actions-runner@sha256:715faeb253440230bc1df95de64064bf73f989f21069559ac6e96b5f90ee2afa
-      options:
-        --volume containers_storage:/home/podman/.local/share/containers/storage:z
+  # cleanup:
+  #   name: cleanup
+  #   if: always()
+  #   needs: [build-push]
+  #   runs-on: podman
+  #   container:
+  #     image: ghcr.io/clement-dufour/actions-runner@sha256:715faeb253440230bc1df95de64064bf73f989f21069559ac6e96b5f90ee2afa
+  #     options:
+  #       --volume containers_storage:/home/podman/.local/share/containers/storage:z
 
-    steps:
-      - name: cleanup local image storage
-        shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
-        run: |
-          for tag in ${IMAGE_TAGS}; do
-            podman --log-level "${LOGLEVEL}" image rm "${REGISTRY}/${REPOSITORY}:${tag}" || true
-          done
-          podman --log-level "${LOGLEVEL}" system prune --force
+  #   steps:
+  #     - name: cleanup local image storage
+  #       shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
+  #       run: |
+  #         for tag in ${IMAGE_TAGS}; do
+  #           podman --log-level "${LOGLEVEL}" image rm "${REGISTRY}/${REPOSITORY}:${tag}" || true
+  #         done
+  #         podman --log-level "${LOGLEVEL}" system prune --force
