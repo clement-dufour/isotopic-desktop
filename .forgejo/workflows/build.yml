@@ -23,7 +23,7 @@ on:
 env:
   REGISTRY: forgejo.clmnt.xyz
   REPOSITORY: ${{ forgejo.repository }}
-  IMAGE_TAGS: latest
+  IMAGE_TAGS: ${{ forgejo.sha }} latest
 
   LOGLEVEL: warn # warn is the default value
 
