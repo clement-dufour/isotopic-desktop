@@ -34,11 +34,5 @@ dnf clean all
 
 systemctl preset-all
 
-KERNEL_VERSION=$(rpm --query --queryformat "%{VERSION}-%{RELEASE}.%{ARCH}\n" kernel)
-dracut --kver "${KERNEL_VERSION}" --force --add ostree --nostrip --verbose \
-    --no-hostonly --zstd --reproducible \
-    "/lib/modules/${KERNEL_VERSION}/initramfs.img"
-chmod 0600 "/lib/modules/${KERNEL_VERSION}/initramfs.img"
-
 ostree container commit
 EOF
