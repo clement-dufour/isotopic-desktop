@@ -10,14 +10,14 @@ dnf config-manager disable \
     fedora-cisco-openh264 \
 
 
-dnf remove --assumeyes \
+dnf --assumeyes remove \
     firefox \
     firefox-langpacks \
     gnome-software-rpm-ostree \
     gnome-tour \
 
 
-dnf install --assumeyes \
+dnf --assumeyes --setopt=install_weak_deps=False install \
     adw-gtk3-theme \
     ddcutil \
     fzf \
