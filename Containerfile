@@ -1,4 +1,4 @@
-FROM quay.io/fedora-ostree-desktops/silverblue:44@sha256:7954fe440256d6ff992bd8e7bd2cc634e95c2b7487f8a99ab4af00319e82d512
+FROM quay.io/fedora-ostree-desktops/silverblue:44@sha256:9ab40efc051e114a8d8a7b8076bef86c0e12466c34dc12fd400058aaad2dbff4
 COPY image_files /
 
 RUN --mount=type=tmpfs,target=/var << 'EOF'
