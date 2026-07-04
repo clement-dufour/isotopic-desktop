@@ -39,12 +39,6 @@ jobs:
     strategy:
       fail-fast: false
 
-    # key not yet supported on forgejo, keeping it for reference
-    # permissions:
-    #   contents: read
-    #   packages: write # needed for pushing package to GHCR
-    #   #id-token: write # needed for signing the images with GitHub OIDC Token
-
     steps:
       - name: checkout repository
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
@@ -133,22 +127,3 @@ jobs:
         shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
           podman --log-level "${LOGLEVEL}" logout "${REGISTRY}"
-
-  # cleanup:
-  #   name: cleanup
-  #   if: ${{ always() }}
-  #   needs: [build-push]
-  #   runs-on: podman
-  #   container:
-  #     image: forgejo.clmnt.xyz/clmnt/actions-runner:latest@sha256:072257b51a88ed3700c63c3209394a2b6f290c0ecfe9ef457b5ceaf2ea89aed5
-  #     options:
-  #       --volume containers_storage:/home/podman/.local/share/containers/storage:z
-
-  #   steps:
-  #     - name: cleanup local image storage
-  #       shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
-  #       run: |
-  #         for tag in ${IMAGE_TAGS}; do
-  #           podman --log-level "${LOGLEVEL}" image rm "${REGISTRY}/${REPOSITORY}:${tag}" || true
-  #         done
-  #         podman --log-level "${LOGLEVEL}" system prune --force
