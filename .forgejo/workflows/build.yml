@@ -109,7 +109,7 @@ jobs:
 
       - name: login to container registry
         id: login
-        if: ${{ (forgejo.event_name == 'push' || forgejo.event_name == 'workflow_dispatch') && forgejo.ref == 'refs/heads/main' }}
+        if: ${{ forgejo.event_name != 'pull_request' && forgejo.ref == 'refs/heads/main' }}
         env:
           REGISTRY_USER: ${{ forgejo.actor }}
           REGISTRY_PASSWORD: ${{ secrets.TOKEN_PACKAGES_RW }}
@@ -119,7 +119,7 @@ jobs:
 
       - name: push to registry
         id: push
-        if: ${{ (forgejo.event_name == 'push' || forgejo.event_name == 'workflow_dispatch') && forgejo.ref == 'refs/heads/main' }}
+        if: ${{ forgejo.event_name != 'pull_request' && forgejo.ref == 'refs/heads/main' }}
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
         shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
