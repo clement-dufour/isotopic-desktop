@@ -77,6 +77,8 @@ jobs:
           EOF
 
       - name: build
+        env:
+          SOURCE: ${{ forgejo.event.repository.html_url }}
         id: build
         shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
@@ -84,7 +86,7 @@ jobs:
           for tag in ${IMAGE_TAGS}; do
             if [ -z "${image_with_tag}" ]; then
               image_with_tag="${REGISTRY}/${REPOSITORY}:${tag}"
-              buildah --log-level "${LOGLEVEL}" bud --file "${FORGEJO_WORKSPACE}/Containerfile" --format oci --tag "${image_with_tag}" "${FORGEJO_WORKSPACE}"
+              buildah --log-level "${LOGLEVEL}" bud --file "${FORGEJO_WORKSPACE}/Containerfile" --format oci --label "org.opencontainers.image.source=${SOURCE}" --tag "${image_with_tag}" "${FORGEJO_WORKSPACE}"
             else
               buildah --log-level "${LOGLEVEL}" tag "${image_with_tag}" "${REGISTRY}/${REPOSITORY}:${tag}"
             fi
