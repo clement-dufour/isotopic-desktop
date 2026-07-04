@@ -46,6 +46,7 @@ jobs:
           if [ -n "${CONTAINERS_POLICY}" ]; then
             cp "${FORGEJO_WORKSPACE}/${CONTAINERS_POLICY}" "${HOME}/.config/containers/policy.json"
           fi
+          cat "${HOME}/.config/containers/policy.json"
 
       - name: build
         id: build
