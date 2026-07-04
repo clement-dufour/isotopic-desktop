@@ -3,7 +3,8 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main
+      - 'main'
+      - 'renovate/**'
     paths:
       - '**'
       - '!**/README.md'
