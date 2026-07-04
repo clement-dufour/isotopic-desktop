@@ -1,0 +1,105 @@
+name: reusable-build
+on:
+  workflow_call:
+    inputs:
+      registry:
+        type: string
+        required: true
+      repository:
+        type: string
+        required: true
+      tags:
+        type: string
+        required: true
+      containers-policy:
+        type: string
+        required: false
+
+env:
+  SOURCE: ${{ forgejo.event.repository.html_url }}
+  REGISTRY: ${{ inputs.registry }}
+  REPOSITORY: ${{ inputs.repository }}
+  TAGS: ${{ inputs.tags }}
+  CONTAINERS_POLICY: ${{ inputs.containers-policy }}
+
+  LOGLEVEL: 'warn'  # debug, info, warn, error, fatal or panic (default: warn)
+
+jobs:
+  reusable-build:
+    name: reusable-build
+    runs-on: podman-builder
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - name: change containers signature policy
+        shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
+        run: |
+          mkdir -p "${HOME}/.config/containers/registries.d"
+
+          cat << EOF > "${HOME}/.config/containers/registries.d/default-docker.yaml"
+          default-docker:
+            use-sigstore-attachments: true
+          EOF
+
+          if [ -n "${CONTAINERS_POLICY}" ]; then
+            cp "${FORGEJO_WORKSPACE}/${CONTAINERS_POLICY}" "${HOME}/.config/containers/policy.json"
+          fi
+
+      - name: build
+        id: build
+        shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
+        run: |
+          labels=()
+          tags=()
+          image_with_tag=''
+
+          labels+=( '--label' "org.opencontainers.image.source=${SOURCE}" )
+
+          for tag in ${TAGS}; do
+            tags+=( '--tag' "${REGISTRY}/${REPOSITORY}:${tag}" )
+            if [ -z "${image_with_tag}" ]; then
+              image_with_tag="${REGISTRY}/${REPOSITORY}:${tag}"
+            fi
+          done
+
+          buildah --log-level "${LOGLEVEL}" bud --format oci --file "${FORGEJO_WORKSPACE}/Containerfile" "${labels[@]}" "${tags[@]}" "${FORGEJO_WORKSPACE}"
+
+          {
+            printf 'image-with-tag=%s\n' "${image_with_tag}"
+          } >> "${FORGEJO_OUTPUT}"
+
+      - name: perform static analysis checks
+        env:
+          IMAGE_WITH_TAG: ${{ steps.build.outputs.image-with-tag }}
+        shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
+        run: |
+          podman --log-level "${LOGLEVEL}" run --rm "${IMAGE_WITH_TAG}" bootc container lint --fatal-warnings
+
+      - name: login to container registry
+        id: login
+        if: ${{ forgejo.event_name != 'pull_request' && forgejo.ref == 'refs/heads/main' }}
+        env:
+          REGISTRY_USER: ${{ secrets.registry-user }}
+          REGISTRY_PASSWORD: ${{ secrets.registry-password }}
+        shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
+        run: |
+          podman --log-level "${LOGLEVEL}" login --username "${REGISTRY_USER}" --password "${REGISTRY_PASSWORD}" "${REGISTRY}"
+
+      - name: push to registry
+        id: push
+        if: ${{ forgejo.event_name != 'pull_request' && forgejo.ref == 'refs/heads/main' }}
+        env:
+          SIGSTORE_PRIVATE_KEY: ${{ secrets.sigstore-private-key }}
+        shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
+        run: |
+          for tag in ${TAGS}; do
+            podman --log-level "${LOGLEVEL}" push --sign-by-sigstore-private-key <(printf '%s\n' "${SIGSTORE_PRIVATE_KEY}") "${REGISTRY}/${REPOSITORY}:${tag}"
+          done
+
+      - name: logout from container registry
+        if: ${{ always() && (steps.login.outcome == 'success' || steps.login.outcome == 'failure' ) }}
+        shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
+        run: |
+          podman --log-level "${LOGLEVEL}" logout "${REGISTRY}"

@@ -1,0 +1,41 @@
+name: ci-build
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+      - 'renovate/**'
+    paths:
+      - '**'
+      - '!**/README.md'
+      - '!**/README.org'
+      - '!**/renovate.json'
+      - '!.forgejo/**'
+  pull_request:
+    branches:
+      - 'main'
+    paths:
+      - '**'
+      - '!**/README.md'
+      - '!**/README.org'
+      - '!**/renovate.json'
+      - '!.forgejo/**'
+
+concurrency:
+  group: ${{ forgejo.workflow }}-${{ forgejo.ref || forgejo.run_id }}
+  cancel-in-progress: ${{ forgejo.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    name: build
+    runs-on: podman-builder
+    uses: ./.forgejo/workflows/reusable-build.yml
+    with:
+      registry: 'forgejo.clmnt.xyz'
+      repository: ${{ forgejo.repository }}
+      tags: ${{ forgejo.sha }} latest
+      containers-policy: ./containers-policy.json
+    secrets:
+      registry-user: ${{ forgejo.actor }}
+      registry-password: ${{ secrets.TOKEN_PACKAGES_RW }}
+      sigstore-private-key: ${{ secrets.COSIGN_PRIVATE_KEY }}
