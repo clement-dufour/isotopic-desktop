@@ -82,15 +82,22 @@ jobs:
         id: build
         shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
-          image_with_tag=""
+          labels=()
+          tags=()
+          image_with_tag=''
+
+          if [ -n "${SOURCE}" ]; then
+            labels+=( '--label' "org.opencontainers.image.source=${SOURCE}" )
+          fi
+
           for tag in ${IMAGE_TAGS}; do
             if [ -z "${image_with_tag}" ]; then
               image_with_tag="${REGISTRY}/${REPOSITORY}:${tag}"
-              buildah --log-level "${LOGLEVEL}" bud --file "${FORGEJO_WORKSPACE}/Containerfile" --format oci --label "org.opencontainers.image.source=${SOURCE}" --tag "${image_with_tag}" "${FORGEJO_WORKSPACE}"
-            else
-              buildah --log-level "${LOGLEVEL}" tag "${image_with_tag}" "${REGISTRY}/${REPOSITORY}:${tag}"
             fi
+            tags+=( '--tag' "${REGISTRY}/${REPOSITORY}:${tag}" )
           done
+
+          buildah --log-level "${LOGLEVEL}" bud --format oci --file "${FORGEJO_WORKSPACE}/Containerfile" "${labels[@]}" "${tags[@]}" "${FORGEJO_WORKSPACE}"
 
           {
             printf 'image-with-tag=%s\n' "${image_with_tag}"
