@@ -35,11 +35,7 @@ concurrency:
 jobs:
   build-push:
     name: build image
-    runs-on: podman
-    container:
-      image: forgejo.clmnt.xyz/clmnt/actions-runner:latest@sha256:072257b51a88ed3700c63c3209394a2b6f290c0ecfe9ef457b5ceaf2ea89aed5
-      options:
-        --volume containers_storage:/home/podman/.local/share/containers/storage:z
+    runs-on: podman-builder
     strategy:
       fail-fast: false
 
