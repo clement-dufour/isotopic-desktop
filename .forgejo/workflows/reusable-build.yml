@@ -11,6 +11,14 @@ on:
       tags:
         type: string
         required: true
+      containerfile:
+        default: ${{ forgejo.workspace }}/Containerfile
+        type: string
+        required: false
+      context:
+        default: ${{ forgejo.workspace }}
+        type: string
+        required: false
       containers-policy:
         type: string
         required: false
@@ -20,6 +28,8 @@ env:
   REGISTRY: ${{ inputs.registry }}
   REPOSITORY: ${{ inputs.repository }}
   TAGS: ${{ inputs.tags }}
+  CONTAINERFILE: ${{ inputs.containerfile }}
+  CONTEXT: ${{ inputs.context }}
   CONTAINERS_POLICY: ${{ inputs.containers-policy }}
 
   LOGLEVEL: 'warn'  # debug, info, warn, error, fatal or panic (default: warn)
@@ -44,7 +54,7 @@ jobs:
           EOF
 
           if [ -n "${CONTAINERS_POLICY}" ]; then
-            cp "${FORGEJO_WORKSPACE}/${CONTAINERS_POLICY}" "${HOME}/.config/containers/policy.json"
+            cp "${CONTAINERS_POLICY}" "${HOME}/.config/containers/policy.json"
           fi
           cat "${HOME}/.config/containers/policy.json"
 
@@ -65,7 +75,7 @@ jobs:
             fi
           done
 
-          buildah --log-level "${LOGLEVEL}" bud --format oci --file "${FORGEJO_WORKSPACE}/Containerfile" "${labels[@]}" "${tags[@]}" "${FORGEJO_WORKSPACE}"
+          buildah --log-level "${LOGLEVEL}" bud --format oci --file "${CONTAINERFILE}" "${labels[@]}" "${tags[@]}" "${CONTEXT}"
 
           {
             printf 'image-with-tag=%s\n' "${image_with_tag}"
