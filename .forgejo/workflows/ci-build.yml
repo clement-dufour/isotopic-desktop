@@ -30,6 +30,7 @@ jobs:
     name: build
     runs-on: podman-builder
     uses: clmnt/container-images/.forgejo/workflows/reusable-build.yml@main
+
     with:
       registry: 'forgejo.clmnt.xyz'
       repository: ${{ forgejo.repository }}
