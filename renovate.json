@@ -3,7 +3,6 @@
   "extends": [
     "config:best-practices"
   ],
-  "recreateWhen": "always",
   "packageRules": [
     {
       "matchPackageNames": [
