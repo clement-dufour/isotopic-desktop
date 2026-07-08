@@ -6,6 +6,19 @@
   "packageRules": [
     {
       "matchPackageNames": [
+        "/^clmnt\\//"
+      ],
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchDatasources": [
+        "github-tags"
+      ],
+      "overrideDatasource": "forgejo-tags",
+      "registryUrls": "https://forgejo.clmnt.xyz/"
+    },
+    {
+      "matchPackageNames": [
         "quay.io/fedora-ostree-desktops/*"
       ],
       "matchUpdateTypes": [
