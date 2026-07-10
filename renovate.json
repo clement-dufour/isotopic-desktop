@@ -15,7 +15,9 @@
         "github-tags"
       ],
       "overrideDatasource": "forgejo-tags",
-      "registryUrls": "https://forgejo.clmnt.xyz/"
+      "registryUrls": [
+          "https://forgejo.clmnt.xyz/"
+      ]
     },
     {
       "matchPackageNames": [
