@@ -32,9 +32,9 @@ jobs:
     uses: clmnt/container-images/.forgejo/workflows/reusable-build.yml@main
 
     with:
-      registry: 'forgejo.clmnt.xyz'
-      repository: ${{ forgejo.repository }}
-      tags: ${{ forgejo.sha }} latest
+      image-names: |
+        forgejo.clmnt.xyz/${{ forgejo.repository }}:${{ forgejo.sha }}
+        forgejo.clmnt.xyz/${{ forgejo.repository }}:latest
       containers-policy: ./containers-policy.json
     secrets:
       registry-user: ${{ forgejo.actor }}
