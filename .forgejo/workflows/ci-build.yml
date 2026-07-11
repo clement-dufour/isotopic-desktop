@@ -7,19 +7,19 @@ on:
       - 'renovate/**'
     paths:
       - '**'
-      - '!**/README.md'
-      - '!**/README.org'
-      - '!**/renovate.json'
+      - '!README.*'
+      - '!renovate.json'
       - '!.forgejo/**'
+      - '.forgejo/workflows/ci-build.yml'
   pull_request:
     branches:
       - 'main'
     paths:
       - '**'
-      - '!**/README.md'
-      - '!**/README.org'
-      - '!**/renovate.json'
+      - '!README.*'
+      - '!renovate.json'
       - '!.forgejo/**'
+      - '.forgejo/workflows/ci-build.yml'
 
 concurrency:
   group: ${{ forgejo.workflow }}-${{ forgejo.ref || forgejo.run_id }}
