@@ -1,34 +1,9 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:best-practices"
+    "clmnt/renovate-config"
   ],
   "packageRules": [
-    {
-      "matchPackageNames": [
-        "/^clmnt\\//"
-      ],
-      "matchManagers": [
-        "github-actions"
-      ],
-      "matchDatasources": [
-        "github-tags"
-      ],
-      "overrideDatasource": "forgejo-tags",
-      "registryUrls": [
-          "https://forgejo.clmnt.xyz/"
-      ]
-    },
-    {
-      "matchPackageNames": [
-        "quay.io/fedora-ostree-desktops/*"
-      ],
-      "matchUpdateTypes": [
-        "digest"
-      ],
-      "automerge": true,
-      "automergeType": "branch"
-    },
     {
       "matchPackageNames": [
         "quay.io/fedora-ostree-desktops/*"
