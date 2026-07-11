@@ -2,18 +2,6 @@ name: ci-build
 on:
   workflow_dispatch:
   push:
-    branches:
-      - 'main'
-      - 'renovate/**'
-    paths:
-      - '**'
-      - '!README.*'
-      - '!renovate.json'
-      - '!.forgejo/**'
-      - '.forgejo/workflows/ci-build.yml'
-  pull_request:
-    branches:
-      - 'main'
     paths:
       - '**'
       - '!README.*'

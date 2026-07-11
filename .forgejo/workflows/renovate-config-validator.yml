@@ -2,15 +2,6 @@ name: renovate-config-validator
 on:
   workflow_dispatch:
   push:
-    branches:
-      - 'main'
-      - 'renovate/**'
-    paths:
-      - 'renovate.json'
-      - '.forgejo/workflows/renovate-config-validator.yml'
-  pull_request:
-    branches:
-      - 'main'
     paths:
       - 'renovate.json'
       - '.forgejo/workflows/renovate-config-validator.yml'
