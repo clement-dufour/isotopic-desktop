@@ -16,7 +16,7 @@ concurrency:
 jobs:
   build:
     runs-on: podman-builder
-    uses: clmnt/container-images/.forgejo/workflows/reusable-build.yml@742e14b53085fc95291b2c79eb7324fd06276485 # v1.0.0
+    uses: clmnt/container-images/.forgejo/workflows/reusable-build.yml@93c4fb5f6c9b7861448146a0833217ce41de9375 # v1.1
 
     with:
       image-names: |
