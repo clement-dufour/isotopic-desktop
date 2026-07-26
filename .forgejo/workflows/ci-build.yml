@@ -1,6 +1,19 @@
 name: ci-build
 on:
   workflow_dispatch:
+    inputs:
+      podman-log-level:
+        description: 'podman log level'
+        required: false
+        default: 'warn'
+        type: choice
+        options:
+          - 'debug'
+          - 'info'
+          - 'warn'
+          - 'error'
+          - 'fatal'
+          - 'panic'
   push:
     paths:
       - '**'
@@ -23,6 +36,7 @@ jobs:
         forgejo.clmnt.xyz/${{ forgejo.repository }}:${{ forgejo.sha }}
         forgejo.clmnt.xyz/${{ forgejo.repository }}:latest
       containers-policy: ./containers-policy.json
+      podman-log-level: ${{ inputs.podman-log-level || 'warn' }}
     secrets:
       registry-user: ${{ forgejo.actor }}
       registry-password: ${{ secrets.TOKEN_PACKAGES_RW }}
