@@ -23,6 +23,7 @@ dnf --assumeyes --setopt=install_weak_deps=False install \
     fzf \
     gvfs-nfs \
     igt-gpu-tools \
+    libimobiledevice \
     neovim \
     osbuild-selinux \
     tmux \
