@@ -10,7 +10,7 @@ jobs:
   renovate-config-validator:
     runs-on: podman-unprivileged
     container:
-      image: ghcr.io/renovatebot/renovate:44@sha256:d3d60a87bab73203327dd664f94f11e83091441ee4964c920662d83023446395
+      image: ghcr.io/renovatebot/renovate:44@sha256:bb8dbd817302a65fd0daea5601a27e4e0124172eb2fea25cf724d3a79b09e044
     strategy:
       fail-fast: true
       matrix:
